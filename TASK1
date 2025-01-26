@@ -1,0 +1,33 @@
+const int buttonPin = 2;  // Push button connected to pin 2
+int buttonState = 0;      // Current state of the button
+int lastButtonState = 1;  // Previous state of the button (starts HIGH because of pull-up)
+int buttonCount = 0;      // Counter variable
+unsigned long lastDebounceTime = 0;  // Debounce timer
+unsigned long debounceDelay = 50;   // Debounce delay in ms
+
+void setup() {
+  pinMode(buttonPin, INPUT_PULLUP);  // Enable internal pull-up resistor
+  Serial.begin(9600);
+  Serial.println("Button Press Counter");
+}
+
+void loop() {
+  int reading = digitalRead(buttonPin);
+
+  // Check for button state change
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();  // Reset debounce timer
+  }
+
+  // If debounce delay has passed, register the button press
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading == LOW && buttonState == HIGH) { // Button pressed (LOW because of pull-up)
+      buttonCount++;  // Increment count
+      Serial.print("Count: ");
+      Serial.println(buttonCount);
+    }
+    buttonState = reading;  // Update button state
+  }
+
+  lastButtonState = reading;  // Save last button state
+}
